@@ -1,1 +1,2 @@
 add_subdirectory(Poisson_surface_reconstruction)
+add_subdirectory(Surface_mesh_skeletonization)
