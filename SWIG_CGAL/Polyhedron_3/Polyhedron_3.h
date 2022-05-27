@@ -46,6 +46,7 @@ public:
     
 //Creation
   Polyhedron_3_wrapper():data_sptr(new cpp_base()){}
+  Polyhedron_3_wrapper(const Polyhedron_3_wrapper &rh):data_sptr(new cpp_base(rh.get_data())){}
   Polyhedron_3_wrapper(const char* off_filename):data_sptr(new cpp_base()){
     std::ifstream file(off_filename);
     if (!file) std::cerr << "Error cannot open file: " << off_filename << std::endl;
@@ -139,8 +140,8 @@ public:
   }
 //Deep copy
   typedef Polyhedron_3_wrapper<Polyhedron_base,Vertex_handle,Halfedge_handle,Facet_handle> Self;
-  Self deepcopy() const {return Self(*this);}
-  void deepcopy(const Self& other){*this=other;}
+  Self deepcopy() const {return Self(this->get_data());}
+  void deepcopy(const Self& other){*this=other.get_data();}
 };
 
 #endif //SWIG_CGAL_POLYHEDRON_3_POLYHEDRON_3_H
