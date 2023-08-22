@@ -435,6 +435,13 @@ SWIG_CGAL_python_vector_of_int_typecheck
   {
     PMP::self_intersections(P.get_data(), out);
   }
+//   CGAL::Polygon_mesh_processing::do_intersect()
+  bool do_intersect(Polyhedron_3_SWIG_wrapper& P,
+                    Polyhedron_3_SWIG_wrapper& Q)
+  {
+    return PMP::do_intersect(P.get_data(), Q.get_data());
+  }
+
 //
 // Orientation Functions
 //   CGAL::Polygon_mesh_processing::is_outward_oriented()

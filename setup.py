@@ -4,7 +4,6 @@ import glob
 import shutil
 
 import sys
-from distutils.core import setup
 
 from setuptools import setup, Extension
 from setuptools.command.build_ext import build_ext as build_ext_orig
@@ -15,6 +14,16 @@ from distutils.command.build import build
 from wheel.bdist_wheel import bdist_wheel
 
 
+# [
+#   'boost_iostreams',
+# 'boost_serialization',
+# 'gmp',
+# 'gmpxx',
+# 'mpfr',
+# 'tbb',
+# 'tbbmalloc',
+# 'z'
+# ]
 
 dependencies_list = ['gmp', 'mpfr', 'mpir.dll', 'boost_serialization', 'boost_iostreams', 'boost_zlib', 'boost_bzip2', 'tbb.dll', 'tbbmalloc', 'las.dll', 'zlib.dll', 'boost_regex']
 
@@ -66,7 +75,8 @@ CGAL_modules = [
     'Mesh_3',
     'Surface_mesher',
     'Triangulation_2',
-    'Triangulation_3'
+    'Triangulation_3',
+    'Alpha_wrap_3'
 ]
 
 extensions = []
@@ -106,7 +116,7 @@ def get_options():
            ('cmake-prefix-path=', None, 'Specify the path to a directory that can be used as CMAKE_PREFIX_PATH, that would contain all headers and libraries. '),
            ('generator=', None, 'The generator to use for cmake.'),
            ('python-executable=', None, 'The path to the python executable.'),
-           ('python-root=', None, 'The path to the python root directory.'),
+           ('python-root=', None, 'The path to the Python root directory.'),
            ('cmake=', None, 'Specify the path to the cmake executable.')
          ]
 
@@ -165,7 +175,7 @@ def init_values(obj):
   obj.generator= None
   obj.cmake= None
   obj.python_root= None
-  obj.python_executable= None
+  obj.python_executable= sys.executable
 
 class BuildWheelCommand(bdist_wheel):
   user_options = bdist_wheel.user_options + get_options()
@@ -302,8 +312,6 @@ class my_build_ext(build_ext_orig):
             '-DCMAKE_BUILD_TYPE=Release',
         ]
         if sys.platform == 'win32' or sys.platform == 'cygwin':
-            cmake_args.append('-DCMAKE_DISABLE_FIND_PACKAGE_boost_serialization=TRUE ')
-            cmake_args.append('-DCMAKE_DISABLE_FIND_PACKAGE_boost_iostreams=TRUE ')
             cmake_args.append('-DBoost_LIB_DIAGNOSTIC_DEFINITIONS=TRUE')
 
         if self.install_dir is not None:
@@ -371,7 +379,7 @@ class my_build_ext(build_ext_orig):
           ]
         else:
           build_args = [
-          '--', '-j4'
+          '--', '-j{}'.format(os.cpu_count())
           ]
         self.cmake_cmd= 'cmake'
         if self.cmake is not None:
@@ -391,12 +399,14 @@ class my_build_ext(build_ext_orig):
 
 
 setup(name='cgal',
-      version='5.1.0',
+      version=os.environ.get('CGAL_PYTHON_MODULE_VERSION') or '5.4.1',
       author="CGAL Project",
-      description="CGAL bindings, allowing to use some of the CGAL library in python.",
-      long_description="The CGAL Bindings project allows to use some packages of CGAL, the Computational Algorithms Library with python. This project is still experimental and more packages will be added. For more information, please visit https://github.com/CGAL/cgal-swig-bindings/wiki.",
+      description="CGAL bindings, allowing to use some of the CGAL library in Python.",
+      long_description="The CGAL Bindings project allows to use some packages of CGAL, the Computational Algorithms Library with Python. This project is still experimental and more packages will be added. For more information, please visit https://github.com/CGAL/cgal-swig-bindings/wiki.",
+      long_description_content_type="text/markdown",
       packages=['CGAL'],
-      package_dir = {'CGAL': 'build/build-python/CGAL'},
+      package_dir = { 'CGAL': '.' },
+      #package_dir = {'CGAL': 'build/build-python/CGAL'},
       url="https://github.com/CGAL/cgal-swig-bindings",
       python_requires='>=3.6',
       classifiers = [

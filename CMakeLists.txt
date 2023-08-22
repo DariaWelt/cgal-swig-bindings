@@ -1,24 +1,6 @@
 cmake_minimum_required(VERSION 3.18) # For FindPython.cmake Development.Module
 
-PROJECT(CGAL-bindings)
-
-if(POLICY CMP0017)
-# New policy in cmake-2.8.3
-  cmake_policy(SET CMP0017 NEW)
-endif()
-
-if (POLICY CMP0042)
-  # Set MACOSX_RPATH to ON
-  cmake_policy (SET CMP0042 NEW)
-endif()
-
-if (POLICY CMP0078)
-  cmake_policy (SET CMP0078 NEW)
-endif()
-
-if (POLICY CMP0086)
-  cmake_policy (SET CMP0086 NEW)
-endif()
+project(CGAL-bindings)
 
 include(${CMAKE_CURRENT_SOURCE_DIR}/cmake/Modules/SWIG_CGAL_Macros.cmake)
 
@@ -31,15 +13,18 @@ option( BUILD_RUBY "Build Ruby bindings" OFF )
 
 enable_testing ()
 add_custom_target (tests)
-set(CMAKE_INSTALL_RPATH "${CMAKE_INSTALL_PREFIX}/lib")
-set(CMAKE_INSTALL_NAME_DIR "@loader_path/../lib") # for macOS
+if(APPLE)
+  set(CMAKE_INSTALL_RPATH "@loader_path;@loader_path/../lib;@loader_path/../../..")
+else()
+  set(CMAKE_INSTALL_RPATH "${CMAKE_INSTALL_PREFIX}/lib")
+endif()
 
 if ( CGAL_FOUND AND ${CGAL_MAJOR_VERSION} GREATER 4 )
 
   include( ${CGAL_USE_FILE} )
 
 
-  find_package( TBB QUIET )
+  find_package( TBB )
   if(TBB_FOUND)
     if(NOT TARGET Threads::Threads)
       find_package(Threads REQUIRED)
@@ -193,6 +178,9 @@ if ( CGAL_FOUND AND ${CGAL_MAJOR_VERSION} GREATER 4 )
     add_subdirectory(SWIG_CGAL/Triangulation_2)
     add_subdirectory(SWIG_CGAL/Polyhedron_3)
     add_subdirectory(SWIG_CGAL/Alpha_shape_2)
+    if (CGAL_VERSION VERSION_GREATER 5.4)
+      add_subdirectory(SWIG_CGAL/Alpha_wrap_3)
+    endif()
     add_subdirectory(SWIG_CGAL/Spatial_searching)
     add_subdirectory(SWIG_CGAL/AABB_tree)
     if (CGAL_ImageIO_FOUND)
@@ -223,11 +211,15 @@ if ( CGAL_FOUND AND ${CGAL_MAJOR_VERSION} GREATER 4 )
     if (CGAL_VERSION VERSION_GREATER 3.6)
       find_package(Eigen3 3.2.0) #(requires 3.2.0 or greater)
       if (EIGEN3_FOUND)
-        include( ${EIGEN3_USE_FILE} )
+        include(CGAL_Eigen3_support)
         add_subdirectory(SWIG_CGAL/Polygon_mesh_processing)
       else()
         message(STATUS "Eigen 3.2 or later was not found, Polygon_mesh_processing bindings will not be available")
       endif(EIGEN3_FOUND)
+    endif()
+
+    if(CGAL_VERSION VERSION_GREATER_EQUAL 6.0 AND CMAKE_CXX_COMPILER_ID STREQUAL AppleClang)
+      target_compile_options(CGAL_Kernel_cpp PUBLIC -mmacosx-version-min=10.13)
     endif()
 
     add_subdirectory(SWIG_CGAL/Polyline_simplification_2)
