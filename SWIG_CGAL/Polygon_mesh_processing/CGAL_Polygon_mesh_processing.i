@@ -62,6 +62,8 @@ SWIG_CGAL_import_Polyhedron_3_Halfedge_handle_SWIG_wrapper
 SWIG_CGAL_import_Polyhedron_3_Facet_handle_SWIG_wrapper
 SWIG_CGAL_import_Polyhedron_3_Vertex_handle_SWIG_wrapper
 
+%include "SWIG_CGAL/Polygon_mesh_processing/distance_functions.h"
+
 %include "SWIG_CGAL/Polygon_mesh_processing/Polygon_mesh_slicer.h"
 %typemap(javaimports) Polygon_mesh_slicer_wrapper %{import CGAL.Kernel.Plane_3; import CGAL.Polyhedron_3.Polyhedron_3;%}
 SWIG_CGAL_declare_identifier_of_template_class(Polygon_mesh_slicer,Polygon_mesh_slicer_wrapper<Polyhedron_3_SWIG_wrapper>)
@@ -100,6 +102,7 @@ SWIG_CGAL_declare_identifier_of_template_class(Halfedge_pair,std::pair<Polyhedro
   #include <SWIG_CGAL/Common/Wrapper_iterator_helper.h>
   #include <SWIG_CGAL/Common/triple.h>
   #include <SWIG_CGAL/Polygon_mesh_processing/utils.h>
+  #include <SWIG_CGAL/Polygon_mesh_processing/distance_functions.h>
   #include <iostream>
 %}
 
