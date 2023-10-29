@@ -445,6 +445,11 @@ SWIG_CGAL_python_vector_of_int_typecheck
     return PMP::do_intersect(P.get_data(), Q.get_data());
   }
 
+  int duplicate_non_manifold_vertices(Polyhedron_3_SWIG_wrapper& P)
+  {
+    return PMP::duplicate_non_manifold_vertices(P.get_data());
+  }
+
 //
 // Orientation Functions
 //   CGAL::Polygon_mesh_processing::is_outward_oriented()

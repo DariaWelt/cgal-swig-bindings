@@ -76,7 +76,6 @@ template <> struct Converter<ENUM>{                  \
 
 #ifndef SWIG
 typedef  SWIG_CGAL::Triple<int,int,int> TRIPLE_INT;
-SWIG_CGAL_SPECIALIZE_CONVERTER( TRIPLE_INT )
 #endif
 
 
